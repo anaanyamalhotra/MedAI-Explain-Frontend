@@ -104,12 +104,12 @@ with tabs[2]:
 
 with tabs[3]:
     st.subheader("ℹ️ About MedAI Explain")
-    st.markdown(\"\"\"
+    st.markdown("""
 **MedAI Explain** is an AI-powered tool that helps users assess their risk of Type 2 Diabetes 
 using medical indicators and provides natural-language explanations and health tips.
 
 Built with ❤️ using FastAPI, Streamlit, scikit-learn, and GPT-style explanation logic.
-\"\"\")
+""")
 
 
     except Exception as e:

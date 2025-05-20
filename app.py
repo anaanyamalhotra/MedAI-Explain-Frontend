@@ -44,47 +44,76 @@ with tabs[0]:
             prob = result["probability"]
             risk_level = ("🔴 High Risk", "🟠 Moderate Risk", "🟢 Low Risk")[0 if prob >= 0.75 else 1 if prob >= 0.5 else 2]
 
-            st.markdown(f"### 🧪 **Prediction**: {'Diabetic' if result['prediction'] == 1 else 'Non-Diabetic'}")
-            st.markdown(f"### 📊 **Risk Probability**: {prob * 100:.1f}%")
-            st.success(f"**Risk Category**: {risk_level}")
-
-            # Feature Contribution (mock bar chart)
-            st.subheader("🔍 Feature Contributions (Relative)")
-            contributions = {
-                "Glucose": Glucose / 200,
-                "BMI": BMI / 50,
-                "Insulin": Insulin / 300,
-                "Age": Age / 100
-            }
-            contrib_df = pd.DataFrame(contributions.items(), columns=["Feature", "Importance"])
-            fig = px.bar(contrib_df, x="Importance", y="Feature", orientation="h", color="Importance", height=300)
-            st.plotly_chart(fig, use_container_width=True)
-
-            # GPT-like explanation
-            exp_resp = requests.post(f"{backend_url}/explain", json=input_data)
-            explanation = exp_resp.json()["explanation"]
-            st.subheader("💬 Explanation")
-            st.write(explanation)
-
-            # Health tips
-            st.subheader("💡 Personalized Health Tips")
-            tips = []
-            if Glucose > 150: tips.append("➤ Reduce sugar intake and monitor glucose.")
-            if BMI > 30: tips.append("➤ Increase physical activity to manage BMI.")
-            if Insulin < 50: tips.append("➤ Consult your doctor about insulin resistance.")
-            if Age > 45: tips.append("➤ Consider regular health screenings.")
-            if not tips:
-                tips.append("✅ All inputs look within healthy range. Keep up the good work!")
-
-            for t in tips:
-                st.markdown(t)
-
-            # Store result for download tab
+            # Save everything to session_state
             st.session_state["latest_result"] = {
                 **input_data,
                 "Prediction": result["prediction"],
-                "Probability": prob
+                "Probability": prob,
+                "RiskLevel": risk_level
             }
+
+            exp_resp = requests.post(f"{backend_url}/explain", json=input_data)
+            explanation = exp_resp.json()["explanation"]
+            st.session_state["explanation"] = explanation
+
+        except Exception as e:
+            st.error("Something went wrong connecting to the backend.")
+            st.text(str(e))
+
+with tabs[1]:
+    st.subheader("📊 Your Results")
+
+    if "latest_result" in st.session_state:
+        r = st.session_state["latest_result"]
+        st.markdown(f"### 🧪 **Prediction**: {'Diabetic' if r['Prediction'] == 1 else 'Non-Diabetic'}")
+        st.markdown(f"### 📊 **Risk Probability**: {r['Probability'] * 100:.1f}%")
+        st.success(f"**Risk Category**: {r['RiskLevel']}")
+
+        st.subheader("🔍 Feature Contributions (Relative)")
+        contributions = {
+            "Glucose": r["Glucose"] / 200,
+            "BMI": r["BMI"] / 50,
+            "Insulin": r["Insulin"] / 300,
+            "Age": r["Age"] / 100
+        }
+        contrib_df = pd.DataFrame(contributions.items(), columns=["Feature", "Importance"])
+        fig = px.bar(contrib_df, x="Importance", y="Feature", orientation="h", color="Importance", height=300)
+        st.plotly_chart(fig, use_container_width=True)
+
+        st.subheader("💬 Explanation")
+        st.write(st.session_state.get("explanation", "Explanation not found."))
+
+        st.subheader("💡 Personalized Health Tips")
+        tips = []
+        if r["Glucose"] > 150: tips.append("➤ Reduce sugar intake and monitor glucose.")
+        if r["BMI"] > 30: tips.append("➤ Increase physical activity to manage BMI.")
+        if r["Insulin"] < 50: tips.append("➤ Consult your doctor about insulin resistance.")
+        if r["Age"] > 45: tips.append("➤ Consider regular health screenings.")
+        if not tips:
+            tips.append("✅ All inputs look within healthy range. Keep up the good work!")
+        for t in tips:
+            st.markdown(t)
+    else:
+        st.info("Run a prediction first in the Risk Test tab.")
+
+with tabs[2]:
+    st.subheader("📥 Download Your Results")
+    if "latest_result" in st.session_state:
+        df_out = pd.DataFrame([st.session_state["latest_result"]])
+        st.download_button("📄 Download as CSV", data=df_out.to_csv(index=False),
+                           file_name="medai_result.csv", mime="text/csv")
+    else:
+        st.info("No result to download. Run a prediction first.")
+
+with tabs[3]:
+    st.subheader("ℹ️ About MedAI Explain")
+    st.markdown("""
+**MedAI Explain** is an AI-powered tool that helps users assess their risk of Type 2 Diabetes 
+using medical indicators and provides natural-language explanations and health tips.
+
+Built with :heart: using FastAPI, Streamlit, scikit-learn, and GPT-style explanation logic.
+""")
+
 
         except Exception as e:
             st.error("Something went wrong connecting to the backend.")

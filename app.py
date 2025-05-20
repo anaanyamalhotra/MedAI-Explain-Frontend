@@ -67,7 +67,8 @@ with tabs[1]:
         r = st.session_state["latest_result"]
         st.markdown(f"### 🧪 **Prediction**: {'Diabetic' if r['Prediction'] == 1 else 'Non-Diabetic'}")
         st.markdown(f"### 📊 **Risk Probability**: {r['Probability'] * 100:.1f}%")
-        st.success(f"**Risk Category**: {r['RiskLevel']}")
+        st.success(f"**Risk Category**: {r.get('RiskLevel', 'N/A')}")
+
 
         st.subheader("🔍 Feature Contributions (Relative)")
         contributions = {

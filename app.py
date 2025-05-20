@@ -37,7 +37,7 @@ with tabs[0]:
 
         backend_url = st.secrets["BACKEND_URL"]
 
-   try:
+        try:
             pred_resp = requests.post(f"{backend_url}/predict", json=input_data)
             pred_resp.raise_for_status()
             result = pred_resp.json()

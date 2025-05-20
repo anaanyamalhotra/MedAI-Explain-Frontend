@@ -113,8 +113,3 @@ using medical indicators and provides natural-language explanations and health t
 
 Built with :heart: using FastAPI, Streamlit, scikit-learn, and GPT-style explanation logic.
 """)
-
-
-        except Exception as e:
-            st.error("Something went wrong connecting to the backend.")
-            st.text(str(e))

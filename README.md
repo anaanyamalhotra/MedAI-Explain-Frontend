@@ -1,4 +1,4 @@
-# 💻 MedAI Explain – Frontend (Streamlit)
+# 💻 MedAI Explain – LLM-Powered Diabetes Risk Explainer
 
 This is the Streamlit UI for **MedAI Explain**, a diabetes risk prediction and explainability platform.
 **Live Demo:** https://medai-explain-frontend.streamlit.app/

@@ -30,7 +30,7 @@ if submitted:
         "Age": Age
     }
 
-    backend_url = st.secrets["BACKEND_URL"])
+    backend_url = st.secrets["BACKEND_URL"]
 
     # Call /predict endpoint
     try:

@@ -37,7 +37,7 @@ with tabs[0]:
 
         backend_url = st.secrets["BACKEND_URL"]
 
-        try:
+   try:
             pred_resp = requests.post(f"{backend_url}/predict", json=input_data)
             pred_resp.raise_for_status()
             result = pred_resp.json()
@@ -76,7 +76,8 @@ with tabs[0]:
             if not tips:
                 tips.append("✅ All inputs look within healthy range. Keep up the good work!")
 
-            for t in tips: st.markdown(t)
+            for t in tips:
+                st.markdown(t)
 
             # Store result for download tab
             st.session_state["latest_result"] = {
@@ -88,30 +89,3 @@ with tabs[0]:
         except Exception as e:
             st.error("Something went wrong connecting to the backend.")
             st.text(str(e))
-
-with tabs[1]:
-    st.subheader("📊 Insights")
-    st.write("Visual explanations of your results are in the Risk Test tab.")
-
-with tabs[2]:
-    st.subheader("📥 Download Your Results")
-    if "latest_result" in st.session_state:
-        df_out = pd.DataFrame([st.session_state["latest_result"]])
-        st.download_button("📄 Download as CSV", data=df_out.to_csv(index=False),
-                           file_name="medai_result.csv", mime="text/csv")
-    else:
-        st.info("Run a prediction first to enable downloads.")
-
-with tabs[3]:
-    st.subheader("ℹ️ About MedAI Explain")
-    st.markdown("""
-**MedAI Explain** is an AI-powered tool that helps users assess their risk of Type 2 Diabetes 
-using medical indicators and provides natural-language explanations and health tips.
-
-Built with ❤️ using FastAPI, Streamlit, scikit-learn, and GPT-style explanation logic.
-""")
-
-
-    except Exception as e:
-        st.error("Something went wrong connecting to the backend.")
-        st.text(str(e))

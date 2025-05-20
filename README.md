@@ -1,6 +1,7 @@
 # 💻 MedAI Explain – Frontend (Streamlit)
 
 This is the Streamlit UI for **MedAI Explain**, a diabetes risk prediction and explainability platform.
+**Live Demo:** https://medai-explain-frontend.streamlit.app/
 
 ## 🔍 What It Does
 - Allows users to enter personal health metrics
